@@ -1,12 +1,13 @@
 
 // Importing the Styling for the main component.
-import './App.css'
+// import './App.css'
+import {Button} from "./components/ui/button.tsx";
 
 function App() {
 
   return (
     <>
-      <div>Welcome Lawde</div>
+      <Button variant={'destructive'} onClick={()=>{alert("Mammy Kaise hai ☺️☺️")}}>Click it Lawde</Button>
     </>
   )
 }
