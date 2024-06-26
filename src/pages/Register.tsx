@@ -20,7 +20,7 @@ const RegisterPage = () => {
                         <div className="grid grid-cols-1 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="first-name">Name</Label>
-                                <Input id="first-name" placeholder="Max" required/>
+                                <Input id="first-name" placeholder="Max" required={true}/>
                             </div>
                         </div>
                         <div className="grid gap-2">
@@ -29,7 +29,7 @@ const RegisterPage = () => {
                                 id="email"
                                 type="email"
                                 placeholder="m@example.com"
-                                required
+                                required={true}
                             />
                         </div>
                         <div className="grid gap-2">
@@ -42,7 +42,7 @@ const RegisterPage = () => {
                     </div>
                     <div className="mt-4 text-center text-sm">
                         Already have an account?{" "}
-                        <Link to="/login" className="underline">
+                        <Link to="/auth/login" className="underline">
                             Sign in
                         </Link>
                     </div>

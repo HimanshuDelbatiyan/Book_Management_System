@@ -1,9 +1,10 @@
 import {createBrowserRouter} from "react-router-dom"
 import LoginPage from "./pages/Login.tsx";
 import HomePage from "./pages/Home.tsx";
-import Register from "./pages/Register.tsx";
+import RegisterPage from "./pages/Register.tsx";
 import DashboardLayout from "./layouts/DashboardLayout.tsx";
 import BooksPage from "./pages/BooksPage.tsx";
+import AuthLayout from "./layouts/AuthLayout.tsx";
 
 
 /**
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
         element: <DashboardLayout/>, // This is the element associated with above path.
         children:[
             {
+                // Don't Put the "/"(Slash)
                 path:"home",
                 element:<HomePage/>
             },
@@ -32,12 +34,19 @@ export const router = createBrowserRouter([
         ]
     },
     {
-        path:"/login",
-        element:<LoginPage/>
-    },
-    {
-        path:"/register",
-        element:<Register/>
+        path:"auth",
+        element:<AuthLayout/>,
+        children:[
+            {
+                path:"login",
+                element:<LoginPage/>
+            },
+            {
+                path:"register",
+                element:<RegisterPage/>
+            }
+        ]
+
     }
 ])
 
