@@ -2,6 +2,8 @@ import {createBrowserRouter} from "react-router-dom"
 import LoginPage from "./pages/Login.tsx";
 import HomePage from "./pages/Home.tsx";
 import Register from "./pages/Register.tsx";
+import DashboardLayout from "./layouts/DashboardLayout.tsx";
+import BooksPage from "./pages/BooksPage.tsx";
 
 
 /**
@@ -15,8 +17,19 @@ import Register from "./pages/Register.tsx";
     // This will create an instance of BrowserRouter.
 export const router = createBrowserRouter([
     {
-        path:"/",
-        element:<HomePage/> // This is the element associated with above path.
+        // This is Nested Route
+        path:"dashboard",
+        element: <DashboardLayout/>, // This is the element associated with above path.
+        children:[
+            {
+                path:"home",
+                element:<HomePage/>
+            },
+            {
+                path:"books",
+                element:<BooksPage/>
+            }
+        ]
     },
     {
         path:"/login",
