@@ -17,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       Instance of Query Client to use by passing to the "client" prop
       Note: Make sure the "QueryClientProvider" Cover the whole application.
       */}
+      {/*Query Client is used to handle data fetching , caching as well as keep our UI updated with the data*/}
       <QueryClientProvider client={queryClient}>
         {/*  Defining the React application to use the Router Instance we have defined.
             To do that we will use the RouterProvider which will specify the router instance which

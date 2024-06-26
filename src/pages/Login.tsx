@@ -5,14 +5,34 @@ import {Input} from "../components/ui/input.tsx";
 import {Button} from "../components/ui/button.tsx";
 import {Link} from "react-router-dom";
 import {useRef} from "react";
+import {useMutation} from "@tanstack/react-query";
+import {login} from "../http/api.ts";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
 
-    // Alright, we are doing to way Binding.
     // Note: "useRef" hook is used to access the HTML Elements Directly.
     // as well as their properties.
     const emailRef = useRef<HTMLInputElement>(null)
     const passRef = useRef<HTMLInputElement>(null)
+    // Using the "useNavigation" hook to navigate between the Routes.
+    const navigate = useNavigate()
+
+    /**
+     * Using the "useMutation" hook to send the data to the server
+     * This method takes an Options Object with some properties specified and
+     * return a instance which is used to send the data to the server.
+     */
+    const mutation = useMutation({
+        mutationFn:login,
+        onSuccess:(response)=>
+        {
+
+            console.log(response.data.accessToken)
+            navigate("/dashboard/home")
+        }
+    })
+
 
     const handleLoginSubmit = () =>
     {
@@ -21,10 +41,18 @@ const LoginPage = () => {
         const email:any = emailRef.current?.value;
         const password:any = passRef.current?.value;
 
-        console.log("data",{email,password})
+        const data = {
+            email,
+            password
+        }
 
-        // Make server call.
+        if(!email || !password)
+        {
+            return alert("Please enter email and password")
+        }
 
+        // Send the data to the client
+        mutation.mutate(data)
 
     }
 
