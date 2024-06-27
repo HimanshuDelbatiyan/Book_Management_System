@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {
     Badge,
     Bell,
@@ -23,8 +23,23 @@ import {
     DropdownMenuTrigger
 } from "../components/ui/dropdown-menu.tsx";
 import {Outlet} from "react-router-dom"
+import useTokenStore from "../Store.ts";
+import {useEffect} from "react";
 const DashboardLayout = () =>
 {
+    const navigate =  useNavigate()
+    const token = useTokenStore((state)=>state.token)
+
+    // Note: useEffect() is a Synchronous Function
+    // But
+    useEffect(()=>{
+        if(token === "")
+        {
+            return navigate('/auth/login');
+        }
+    })
+
+
     return(<>
         <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-muted/40 md:block">
