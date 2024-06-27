@@ -16,3 +16,7 @@ export const register = async (data:{name:string,email:string,password:string})=
 {
     return await api.post("/api/users/register",data)
 }
+
+export const getBooks = async () => {
+    return await api.get("/api/books")
+}
