@@ -11,7 +11,7 @@ const AuthLayout = () => {
     useEffect(()=>{
         if(token)
         {
-            return navigate('/auth/login');
+            return navigate('/dashboard/home');
         }
     })
     return(<>

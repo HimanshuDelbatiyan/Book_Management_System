@@ -28,7 +28,7 @@ import {useEffect} from "react";
 const DashboardLayout = () =>
 {
     const navigate =  useNavigate()
-    const token = useTokenStore((state)=>state.token)
+    const {token, setToken} = useTokenStore((state)=>state)
 
     // Note: useEffect() is a Synchronous Function
     // But
@@ -38,6 +38,12 @@ const DashboardLayout = () =>
             return navigate('/auth/login');
         }
     })
+
+    const logout = () =>
+    {
+        console.log("Log Out")
+        setToken("")
+    }
 
 
     return(<>
@@ -196,7 +202,7 @@ const DashboardLayout = () =>
                             <DropdownMenuItem>Settings</DropdownMenuItem>
                             <DropdownMenuItem>Support</DropdownMenuItem>
                             <DropdownMenuSeparator/>
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                            <DropdownMenuItem ><Button variant={"ghost"} onClick={logout}>Logout</Button></DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </header>
