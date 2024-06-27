@@ -9,6 +9,7 @@ import {useMutation} from "@tanstack/react-query";
 import {login} from "../http/api.ts";
 import { useNavigate } from "react-router-dom";
 import {LoaderCircle} from "lucide-react";
+import useTokenStore from "../Store.ts"
 
 const LoginPage = () => {
 
@@ -19,6 +20,12 @@ const LoginPage = () => {
     // Using the "useNavigation" hook to navigate between the Routes.
     const navigate = useNavigate()
 
+
+    const setToken = useTokenStore((state)=> state.setToken)
+    const token = useTokenStore((state)=> state.token)
+
+
+
     /**
      * Using the "useMutation" hook to send the data to the server
      * This method takes an Options Object with some properties specified and
@@ -26,10 +33,12 @@ const LoginPage = () => {
      */
     const mutation = useMutation({
         mutationFn:login,
-        onSuccess:(response)=>
+        // Argument is response from the server.
+        onSuccess:  (response) =>
         {
-
-            console.log(response.data.accessToken)
+            console.log(response)
+            setToken(response.data.accessToken)
+            console.log(token)
             navigate("/dashboard/home")
         }
     })
