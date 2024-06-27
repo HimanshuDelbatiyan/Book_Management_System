@@ -5,6 +5,7 @@ import RegisterPage from "./pages/Register.tsx";
 import DashboardLayout from "./layouts/DashboardLayout.tsx";
 import BooksPage from "./pages/BooksPage.tsx";
 import AuthLayout from "./layouts/AuthLayout.tsx";
+import CreateBook from "./pages/CreateBook.tsx";
 
 
 /**
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
             {
                 path:"books",
                 element:<BooksPage/>
+            },
+            {
+                path:"books/create",
+                element:<CreateBook/>
             }
         ]
     },

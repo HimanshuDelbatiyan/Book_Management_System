@@ -7,15 +7,18 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator
 } from "../components/ui/breadcrumb.tsx";
-import {LoaderCircle, MoreHorizontal, Slash} from "lucide-react";
+import {CirclePlus, LoaderCircle, MoreHorizontal, Slash} from "lucide-react";
 import {Badge} from "../components/ui/badge.tsx";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "../components/ui/card.tsx";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table.tsx";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../components/ui/dropdown-menu.tsx";
 import { Button } from "../components/ui/button.tsx";
 import {Book} from "../types.ts";
+import {useNavigate} from "react-router-dom";
 
 const BooksPage = () => {
+
+    const navigate = useNavigate();
 
     // By Default, React Query does not cache the data.
     const query = useQuery({queryFn:getBooks,queryKey:["books"]
@@ -27,19 +30,24 @@ const BooksPage = () => {
     }
     // @ts-ignore
     return(<>
-        <Breadcrumb>
-            <BreadcrumbList>
-                <BreadcrumbItem>
-                    <BreadcrumbLink href="/dashboard/home">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator>
-                    <Slash />
-                </BreadcrumbSeparator>
-                <BreadcrumbItem>
-                    <BreadcrumbLink>Books</BreadcrumbLink>
-                </BreadcrumbItem>
-            </BreadcrumbList>
-        </Breadcrumb>
+
+        <div className="flex items-center justify-between">
+            <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href="/dashboard/home">Home</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator>
+                        <Slash />
+                    </BreadcrumbSeparator>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink>Books</BreadcrumbLink>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
+            <Button onClick={()=>{navigate("/dashboard/books/create")}} className={"flex gap-2"}><CirclePlus size={18} /> Add Book </Button>
+        </div>
+
         <Card className="mt-6">
             <CardHeader>
                 <CardTitle className={"flex gap-2"}>Books
