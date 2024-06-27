@@ -7,6 +7,7 @@ import {useRef} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {register} from "../http/api.ts";
 import {LoaderCircle} from "lucide-react";
+import useTokenStore from "../Store.ts";
 
 
 const RegisterPage = () =>
@@ -19,6 +20,8 @@ const RegisterPage = () =>
 
     const navigate =  useNavigate();
 
+    const setToken = useTokenStore((state)=> state.setToken)
+
 
 
     // Creating the mutation instance which contains various methods and properties
@@ -26,7 +29,7 @@ const RegisterPage = () =>
         mutationFn:register,
         onSuccess: (response) =>
         {
-            console.log(response.data)
+            setToken(response.data.accessToken)
             navigate("/dashboard/home")
         }
     })
