@@ -70,12 +70,11 @@ const CreateBook = () => {
     const mutation = useMutation({
         mutationFn:createBook,
         onSuccess: (response) => {
-            queryClient.invalidateQueries({queryKey:["books"]}) //????
+            queryClient.invalidateQueries({queryKey:["books"]})
             console.log(response.data)
             navigate("/dashboard/books")
         }
     })
-
 
 
     /**
@@ -87,6 +86,7 @@ const CreateBook = () => {
         /**
          * Creating the instance of "FormData"
          * To represent the fields and their values of a form.
+         * This is an easy way to construct the data for fetch requests.
          */
         const formData = new FormData();
 
@@ -97,19 +97,13 @@ const CreateBook = () => {
         formData.append("coverImage", values.coverImage[0])
         formData.append("file", values.file[0])
 
+
         for (const [key, value] of formData.entries()) {
             console.log(`${key}: ${value}`);
         }
 
-
+        // Sending the data to the server.
         mutation.mutate(formData)
-
-
-
-
-
-
-
     }
 
     // @ts-ignore

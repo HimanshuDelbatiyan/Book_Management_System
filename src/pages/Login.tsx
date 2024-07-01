@@ -21,9 +21,9 @@ const LoginPage = () => {
     const navigate = useNavigate()
 
 
+    // Using the Global State Object for managing the state of the application.
     const setToken = useTokenStore((state)=> state.setToken)
     const token = useTokenStore((state)=> state.token)
-
 
 
     /**

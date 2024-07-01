@@ -1,4 +1,4 @@
-import {createBrowserRouter} from "react-router-dom"
+import {createBrowserRouter, Navigate} from "react-router-dom"
 import LoginPage from "./pages/Login.tsx";
 import HomePage from "./pages/Home.tsx";
 import RegisterPage from "./pages/Register.tsx";
@@ -19,7 +19,14 @@ import CreateBook from "./pages/CreateBook.tsx";
     // This will create an instance of BrowserRouter.
 export const router = createBrowserRouter([
     {
+        path:"/",
+        element: <Navigate to={"/dashboard/home"} />
+
+    },
+    {
         // This is Nested Route
+        // Make sure we have used the <Outlet> Component in the parent component
+        // So that on change in route will change the content to.
         path:"dashboard",
         element: <DashboardLayout/>, // This is the element associated with above path.
         children:[
