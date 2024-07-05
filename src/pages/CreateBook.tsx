@@ -7,12 +7,12 @@ import {
 } from "../components/ui/breadcrumb.tsx";
 import {LoaderCircle, Slash} from "lucide-react";
 import {Button} from "../components/ui/button.tsx";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "../components/ui/card.tsx";
 import {Input} from "../components/ui/input.tsx";
 import {Textarea} from "../components/ui/textarea.tsx";
-import { useForm} from "react-hook-form";
-import zod  from "zod"
+import {useForm} from "react-hook-form";
+import zod from "zod"
 import {zodResolver} from "@hookform/resolvers/zod";
 import {
     Form,
@@ -23,90 +23,141 @@ import {
     FormLabel,
     FormMessage
 } from "../components/ui/form.tsx";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {createBook} from "../http/api.ts";
-const CreateBook = () => {
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {createBook, singleBook, updateBook} from "../http/api.ts";
+import {useEffect} from "react";
+const CreateBook = () =>
+{
 
-    // Using the "useNavigate" React hook to navigate around the website
-    const navigate =  useNavigate()
+    let querySingleBook:any;
+    // Using the React Query instance created for the application
+    const queryClient = useQueryClient();
+    // Using the useNavigate hook to navigate throughout the website
+    const navigate = useNavigate();
+    // Defining an variable which will hold the useQuery instance for getting the single book
 
-    // Defining the Validation Schema using the "zod Validation Library"
-    // Which will be used by the "Shadcn UI Form Hook" to validate the form fields.
-    const formSchema = zod.object({
-        title: zod.string().min(1,"Book Title is Required"),
-        description: zod.string().min(1,"Book Description is Required"),
-        genre: zod.string().min(1,"Book Genre is Required"),
-        /**
-         * "FileList" is a built-in "JavaScript Class" Whose instance is used to hold "Collection of files" selected by
-         * the "input" element.
-         * and Each "input element" has its own "FileList" object contained inside the ".files" property of the input element.
-         * Note: ".refine" method is used to perform Custom Validation on specified field.
-         */
-        coverImage: zod.instanceof(FileList).refine((fileList)=> {return fileList.length === 1}, "Cover Image is required"),
-        file: zod.instanceof(FileList).refine((fileList)=> {return fileList.length === 1}, "Book PDF is required"),
+    const baseSchema = {
+        title: zod.string().min(1, "Book Title is Required"),
+        description: zod.string().min(1, "Book Description is Required"),
+        genre: zod.string().min(1, "Book Genre is Required"),
+    };
+
+    const {id} = useParams();
+
+    const form = useForm({
+        resolver: zodResolver(zod.object( id ? {
+            // using the spread Operator to include the another object inside the another
+            ...baseSchema,
+            coverImage: zod.any(),
+            file: zod.any(),
+        } : {
+            ...baseSchema,
+            coverImage: zod.instanceof(FileList).refine((fileList) => fileList.length === 1, "Cover Image is required"),
+            file: zod.instanceof(FileList).refine((fileList) => fileList.length === 1, "Book PDF is required"),
+        })),
+        defaultValues: {title: "", description: "", genre: "",coverImage:null,file:null}
     })
 
-    // Initializing the Form Hook:
-    // As well as specifying the Validation Schema and specifying the fields too.
-    const form = useForm<zod.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        /**
-         * Defining which fields needed to be handled by the "Form Hook"
-         */
-        defaultValues:{title:"",description:"",genre:""}
-    })
+    // If "id" is not empty then fetch the associated document from the collection.
+    if(id)
+    {
+        // useQuery hook will refetch the data everytime "id" changes cause
+        // id has been passed as an argument to the queryKey.
+        // Note: EveryTime Query Key Changes React Query Re-run the function
+        querySingleBook = useQuery(
+            {
+                queryFn: async () => {
+                    const data = await singleBook(id as string)
+                    return data;
+                }, queryKey: ["getSingle",id]
+            })
 
-    /**
-     * Registering the Two more fields which need to be handled by the Form Hook
-     * Which will apply or validate it against the specified Validation Schema.
-     */
-    const imageRef = form.register("coverImage");
+        // If there is any error then log that into the console.
+        if (querySingleBook.isError)
+        {
+            console.log(querySingleBook.error.message)
+        }
+    }
+
+    // Once we got the data
+    useEffect(() =>
+    {
+        if (querySingleBook?.data)
+        {
+            form.setValue("title", querySingleBook.data.data.title);
+            form.setValue("description", querySingleBook.data.data.description);
+            form.setValue("genre", querySingleBook.data.data.genre);
+
+        }
+    },[id,querySingleBook?.data]);
+
+    const imageRef = form.register("coverImage")
     const fileRef = form.register("file")
 
-    // Accessing the QueryClient instance we created for this React app
-    const queryClient = useQueryClient()
 
-    // Using the useMutation hook to send the data to the server.
-    const mutation = useMutation({
-        mutationFn:createBook,
-        onSuccess: (response) => {
-            queryClient.invalidateQueries({queryKey:["books"]})
-            console.log(response.data)
-            navigate("/dashboard/books")
-        }
-    })
-
-
-    /**
-     * Defining the method which will be executed when the form is submitted.
-     * @param values (passed as argument by the "form.handleSubmit()")
-     */
-    function onSubmit(values: zod.infer<typeof formSchema>)
+    // This function will return the function
+    // based on whether the Id is empty or not.
+    const functionFinder = (id:string) =>
     {
-        /**
-         * Creating the instance of "FormData"
-         * To represent the fields and their values of a form.
-         * This is an easy way to construct the data for fetch requests.
-         */
+        if(id)
+        {
+            return updateBook;
+        }
+        else {
+            return createBook
+        }
+    }
+
+
+    // Defining the mutation Object which will be used to send the new or existing book new data to the server.
+    const mutation = useMutation(
+            {
+                mutationFn: functionFinder(id as string),
+                onSuccess: (response) => {
+                    queryClient.invalidateQueries({queryKey: ["books"]})
+                    console.log(response.data)
+
+                    navigate("/dashboard/books")
+                }
+            })
+
+
+    function onSubmit(values: any)
+    {
+        // Defining an FormData Instance which will hold the data for the form
+        // As well as FormData makes sending the data to the server easier
+        // when using the fetch or Axios.
         const formData = new FormData();
 
-        // Appending key/value pairs to the form.
         formData.append("title", values.title)
         formData.append("genre", values.genre)
         formData.append("description", values.description)
-        formData.append("coverImage", values.coverImage[0])
-        formData.append("file", values.file[0])
 
+        if(values.coverImage) {
+            formData.append("coverImage", values.coverImage[0])
+        }
+        if(values.file)
+        {
+            formData.append("file", values.file[0])
+        }
 
+        // Log all the entries into the Console
         for (const [key, value] of formData.entries()) {
             console.log(`${key}: ${value}`);
         }
 
-        // Sending the data to the server.
-        mutation.mutate(formData)
+        if(!id)
+        {
+            mutation.mutate(formData)
+
+        }
+        else {
+            // @ts-ignore
+            mutation.mutate({formData,id})
+        }
+
     }
 
-    // @ts-ignore
     return(
         <section>
             <Form {...form}>
@@ -134,15 +185,16 @@ const CreateBook = () => {
                         </Breadcrumb>
                         <div className={"flex items-center gap-4"}>
                             <Link to={"/dashboard/books"}><Button variant={"outline"} className={"flex gap-2"}> Cancel </Button></Link>
-                            <Button className={"flex gap-2"} type={"submit"} disabled={mutation.isPending}> Submit {(mutation.isPending &&
-                                <span className={"animate-spin"}> <LoaderCircle/> </span>)}</Button>
+                            <Button className={"flex gap-2"} type={"submit"} disabled={mutation.isPending}> {id ? "Update" : "Submit"} {(mutation.isPending &&
+                                <span className={"animate-spin ml-2"}> <LoaderCircle/> </span>)}</Button>
                         </div>
                     </div>
                     <Card className="mt-6">
                         <CardHeader>
-                            <CardTitle className={"flex gap-2"}>Create a New Book</CardTitle>
+                            <CardTitle className={"flex gap-2"}>{id ? "Update an Existing": "Create a new"} Book
+                                </CardTitle>
                             <CardDescription>
-                                Fill out the below form to create a new book.
+                                    Fill out the below form {id ? "to Update the book" : "to create a new book" }.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -170,7 +222,7 @@ const CreateBook = () => {
                             </div>
                             <div className="grid gap-3">
                                 <FormField control={form.control} name={"description"}
-                                           render={({field}) => (
+                                           render={({field})=> (
                                                <FormItem>
                                                    <FormLabel>Description</FormLabel>
                                                    <FormControl>
@@ -208,7 +260,7 @@ const CreateBook = () => {
                                 <FormField control={form.control} name={"coverImage"}
                                            render={() => (
                                                <FormItem>
-                                                   <FormLabel>Cover Image</FormLabel>
+                                                   <FormLabel>Cover Image{id && " (Optional)"}</FormLabel>
                                                    <FormControl>
                                                        <Input
                                                            id="coverImage"
@@ -226,7 +278,7 @@ const CreateBook = () => {
                                 <FormField control={form.control} name={"file"}
                                            render={() => (
                                                <FormItem>
-                                                   <FormLabel>File</FormLabel>
+                                                   <FormLabel>File:{id && " (Optional)"}</FormLabel>
                                                    <FormControl>
                                                        <Input
                                                            id="file"
@@ -240,11 +292,13 @@ const CreateBook = () => {
                                )}
                                 />
                             </div>
+                            {id && <div className={"mt-2 p-2 text-red-800 font-bold"}>Note: If no files are uploaded then old ones will be utilized.</div>}
                     </CardContent>
                 </Card>
             </form>
         </Form>
-</section>
-)}
+    </section>)
+}
+
 
 export default CreateBook;

@@ -2,15 +2,15 @@ import {Card, CardContent, CardDescription,  CardHeader, CardTitle} from "../com
 import {Label} from "../components/ui/label.tsx";
 import {Input} from "../components/ui/input.tsx";
 import {Button} from "../components/ui/button.tsx";
-import {Link, useNavigate} from "react-router-dom";
 import {useRef} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {register} from "../http/api.ts";
-import {LoaderCircle} from "lucide-react";
+import {LoaderCircle, X} from "lucide-react";
 import useTokenStore from "../Store.ts";
+import {useNavigate} from "react-router-dom";
 
-
-const RegisterPage = () =>
+//@ts-ignore
+const RegisterPage = ({showRegisterModal}) =>
 {
 
     // Using the "useRef" to manipulate the HTML elements directly.
@@ -59,52 +59,60 @@ const RegisterPage = () =>
 
 
     return (
-        <div className="w-full h-screen items-center bg-zinc-800 bg- flex justify-center bg-opacity-25">
-            <Card className="w-full max-w-sm">
-                <CardHeader>
-                    <CardTitle className="text-xl">Sign Up</CardTitle>
-                    <CardDescription>
-                        Enter your information to create an account
-                        <br></br>
-                        {mutation.isError && <span className={"text-red-800 text-center font-bold"}>{mutation.error.message}</span>}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid gap-4">
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input ref={nameRef} id="name" placeholder="Max" required={true}/>
+        <div className="fixed inset-0  items-center flex justify-center bg-opacity-30 backdrop-blur-sm">
+            <div>
+                <div className={"text-end"}>
+                    <button onClick={()=>{showRegisterModal(false)}} className='mb-2 hover:bg-black hover:text-white hover:rounded-md'><X/></button>
+                </div>
+                <div>
+                    <Card className="w-100 p-4 font-bold font-3xl max-w-md">
+                        <CardHeader>
+                            <CardTitle className="text-xl">Sign Up</CardTitle>
+                            <CardDescription>
+                                Enter your information to create an account
+                                <br></br>
+                                {mutation.isError && <span
+                                    className={"text-red-800 text-center font-bold"}>{mutation.error.message}</span>}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid gap-4">
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="name">Name</Label>
+                                        <Input ref={nameRef} id="name" placeholder="Max" required={true}/>
+                                    </div>
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        ref={emailRef}
+                                        id="email"
+                                        type="email"
+                                        placeholder="m@example.com"
+                                        required={true}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input ref={passwordRef} id="password" type="password"/>
+                                </div>
+                                <Button onClick={RegisterUser} type="submit" className="w-full"
+                                        disabled={mutation.isPending}>
+                                    {mutation.isPending && <span className={"animate-spin"}> <LoaderCircle/> </span>}
+                                    <span className={"ml-2"}>Create an account</span>
+                                </Button>
                             </div>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                ref={emailRef}
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                required={true}
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input ref={passwordRef} id="password" type="password"/>
-                        </div>
-                        <Button onClick={RegisterUser} type="submit" className="w-full" disabled={mutation.isPending}>
-                            {mutation.isPending && <span className={"animate-spin"}> <LoaderCircle /> </span>}
-                            <span className={"ml-2"}>Create an account</span>
-                        </Button>
-                    </div>
-                    <div className="mt-4 text-center text-sm">
-                        Already have an account?{" "}
-                        <Link to="/auth/login" className="underline">
-                            Sign in
-                        </Link>
-                    </div>
-                </CardContent>
-            </Card>
+                            {/*<div className="mt-4 text-center text-sm">*/}
+                            {/*    Already have an account?{" "}*/}
+                            {/*    <Link to="/auth/login" className="underline">*/}
+                            {/*        Sign in*/}
+                            {/*    </Link>*/}
+                            {/*</div>*/}
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
         </div>)
 }
-
 export default RegisterPage

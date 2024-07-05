@@ -1,11 +1,12 @@
-import {createBrowserRouter, Navigate} from "react-router-dom"
-import LoginPage from "./pages/Login.tsx";
-import HomePage from "./pages/Home.tsx";
-import RegisterPage from "./pages/Register.tsx";
+import {createBrowserRouter} from "react-router-dom"
+// import LoginPage from "./pages/Login.tsx";
+import HomePage from "./pages/DashHome.tsx";
 import DashboardLayout from "./layouts/DashboardLayout.tsx";
 import BooksPage from "./pages/BooksPage.tsx";
-import AuthLayout from "./layouts/AuthLayout.tsx";
 import CreateBook from "./pages/CreateBook.tsx";
+import MainHome from "./pages/MainHome.tsx";
+import HomeLayout from "./layouts/HomeLayout.tsx";
+import SingleBook from "./pages/SingleBook.tsx";
 
 
 /**
@@ -20,8 +21,17 @@ import CreateBook from "./pages/CreateBook.tsx";
 export const router = createBrowserRouter([
     {
         path:"/",
-        element: <Navigate to={"/dashboard/home"} />
-
+        element:<HomeLayout/>,
+        children:[
+            {
+                path: "home",
+                element: <MainHome/>
+            },
+            {
+                path: "home/book/:id",
+                element: <SingleBook/>
+            }
+        ]
     },
     {
         // This is Nested Route
@@ -42,23 +52,12 @@ export const router = createBrowserRouter([
             {
                 path:"books/create",
                 element:<CreateBook/>
+            },
+            {
+                path:"books/update/:id",
+                element:<CreateBook/>
             }
         ]
     },
-    {
-        path:"auth",
-        element:<AuthLayout/>,
-        children:[
-            {
-                path:"login",
-                element:<LoginPage/>
-            },
-            {
-                path:"register",
-                element:<RegisterPage/>
-            }
-        ]
-
-    }
 ])
 

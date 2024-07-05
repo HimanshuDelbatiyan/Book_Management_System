@@ -1,0 +1,5 @@
+1. Update Book Functionality
+2. Delete a Book
+3. Pagination
+4. Admin Specific Books Displaying
+and Control Functionality

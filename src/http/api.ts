@@ -29,9 +29,16 @@ export const register = async (data:{name:string,email:string,password:string})=
     return await api.post("/api/users/register",data)
 }
 
-export const getBooks = async () => {
-    return await api.get("/api/books")
+export const getBooks = async (page:number) => {
+
+    return await api.get(`/api/books/specific?page=${page}`)
 }
+
+export const getBooksAll = async (page:number) => {
+
+    return await api.get(`/api/books/?page=${page}`)
+}
+
 
 export const createBook = async (data:FormData) =>
 {
@@ -41,4 +48,24 @@ export const createBook = async (data:FormData) =>
             "Content-Type":"multipart/form-data"
         }
     })
+}
+
+export const updateBook = async (data:any) => {
+
+    return await api.patch(`/api/books/${data.id}`, data.formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        })
+}
+
+export const deleteBook = async (bookId:string) =>
+{
+    return await api.delete(`/api/books/${bookId}`);
+}
+
+export const singleBook = async (bookId:string) =>
+{
+    return await api.get(`/api/books/${bookId}`)
 }
